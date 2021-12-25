@@ -1,0 +1,27 @@
+name: Build Program
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    build:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  submodules: 'true'
+            - uses: actions/setup-dotnet@v1
+              with:
+                  dotnet-version: '6.0.x'
+            - name: 'Replacing resources'
+              run: .\ReplaceResources.ps1
+            - name: 'Building project'
+              run: dotnet publish osu-ipc-server/osuDifficultyIPC.csproj -c Release -r win-x64
+            - name: Upload binary artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: osuDifficultyIPC
+                  path: osu-ipc-server/bin/Release/net6.0/win-x64/publish/osuDifficultyIPC.exe
