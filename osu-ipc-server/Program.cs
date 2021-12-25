@@ -1,27 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using osuDifficultyIPC.LegacyIpc;
 
-namespace osuDifficultyIPC // Note: actual namespace depends on the project name.
+namespace osuDifficultyIPC
 {
     public class Program
     {
         private static bool exit;
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
+            Console.Title = "osuDifficultyIPC: Starting";
             Console.WriteLine("Starting legacy IPC provider...");
-            var legacyIpc = new LegacyTcpIpcProvider();
+
+            bool debug = args.Contains("-d") || args.Contains("--debug");
+            var legacyIpc = new LegacyTcpIpcProvider(debug);
             bool bindResult = legacyIpc.Bind();
-            if (!bindResult){
+            if (!bindResult)
+            {
+                Console.Title = "osuDifficultyIPC: Failed";
                 Console.WriteLine("Failed to start server.");
-                Environment.Exit(1);
+                return 1;
             }
 
+            Console.Title = "osuDifficultyIPC: Started | CTRL + C to stop";
             Console.WriteLine("Server started! Press CTRL + C to stop.");
             Console.CancelKeyPress += new ConsoleCancelEventHandler(exitHandler);
+
+            // Just sleep until CTRL + C
             while (!exit) { }
             legacyIpc.Dispose();
+
+            return 0;
         }
 
         public static void exitHandler(object sender, ConsoleCancelEventArgs args)

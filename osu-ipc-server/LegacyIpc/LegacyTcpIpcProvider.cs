@@ -24,7 +24,7 @@ namespace osuDifficultyIPC.LegacyIpc
     /// </summary>
     public class LegacyTcpIpcProvider : TcpIpcProvider
     {
-        public LegacyTcpIpcProvider()
+        public LegacyTcpIpcProvider(bool debug)
             : base(45357)
         {
             MessageReceived += msg =>
@@ -32,7 +32,8 @@ namespace osuDifficultyIPC.LegacyIpc
                 try
                 {
                     Console.WriteLine("Processing legacy IPC message...");
-                    Console.WriteLine($"    {msg.Value}");
+                    if (debug)
+                        Console.WriteLine($"    {msg.Value}");
 
                     // See explanation in LegacyIpcMessage for why this is done this way.
                     var legacyData = ((JObject)msg.Value).ToObject<LegacyIpcMessage.Data>();
