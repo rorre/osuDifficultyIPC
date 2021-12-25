@@ -12,8 +12,13 @@ namespace osuDifficultyIPC // Note: actual namespace depends on the project name
         {
             Console.WriteLine("Starting legacy IPC provider...");
             var legacyIpc = new LegacyTcpIpcProvider();
-            legacyIpc.Bind();
+            bool bindResult = legacyIpc.Bind();
+            if (!bindResult){
+                Console.WriteLine("Failed to start server.");
+                Environment.Exit(1);
+            }
 
+            Console.WriteLine("Server started! Press CTRL + C to stop.");
             Console.CancelKeyPress += new ConsoleCancelEventHandler(exitHandler);
             while (!exit) { }
             legacyIpc.Dispose();
